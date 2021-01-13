@@ -6,6 +6,8 @@ var _sequelize = require("sequelize");
 
 var _database = _interopRequireDefault(require("../config/database"));
 
+var _Class = _interopRequireDefault(require("./Class"));
+
 var userAttr = {
   id: {
     type: _sequelize.DataTypes.INTEGER,
@@ -23,25 +25,22 @@ var userAttr = {
     validate: {
       isEmail: true
     }
+  },
+  classId: {
+    type: _sequelize.DataTypes.INTEGER,
+    references: {
+      model: _Class["default"],
+      key: 'id'
+    }
   }
 };
-
-var Teacher = _database["default"].define('Teacher', userAttr, {
-  timestamps: false
-});
 
 var Student = _database["default"].define('Student', userAttr, {
   timestamps: false
 });
 
-Student.associate = function (models) {
-  Student.belongsTo(models.Class, {
-    foreignKey: 'id',
-    as: 'Class'
-  });
-};
+Student.belongsTo(_Class["default"]);
 
-module.exports = {
-  Teacher: Teacher,
-  Student: Student
-};
+_Class["default"].hasMany(Student);
+
+module.exports = Student;

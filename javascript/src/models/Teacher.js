@@ -25,11 +25,4 @@ const Teacher = sequelize.define('Teacher', userAttr, {
     timestamps: false,
 })
 
-const Student = sequelize.define('Student', userAttr, {
-    timestamps: false,
-})
-Student.associate = models => {
-    Student.belongsTo(models.Class);
-}
-
-module.exports = { Teacher, Student };
+module.exports = Teacher;

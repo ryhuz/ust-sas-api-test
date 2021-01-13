@@ -23,14 +23,4 @@ const Class = sequelize.define('Class', classAttr, {
     timestamps: false,
 })
 
-Class.associate = models => {
-    Class.hasMany(models.Students);
-}
-
-Class.associate = models => {
-    Class.belongsToMany(models.Subject, {
-        through: "TeachersSubjectsClasses"
-    });
-}
-
-module.exports = { Class };
+module.exports = Class;

@@ -6,6 +6,8 @@ var _sequelize = require("sequelize");
 
 var _database = _interopRequireDefault(require("../config/database"));
 
+var _Class = _interopRequireDefault(require("./Class"));
+
 var subjectAttr = {
   id: {
     type: _sequelize.DataTypes.INTEGER,
@@ -27,12 +29,15 @@ var Subject = _database["default"].define('Subject', subjectAttr, {
   timestamps: false
 });
 
-Subject.associate = function (models) {
-  Subject.belongsToMany(models.Class, {
-    through: "TeachersSubjectsClasses"
-  });
-};
+var ClassesSubjects = _database["default"].define('ClassesSubjects', {}, {
+  timestamps: false
+});
 
-module.exports = {
-  Subject: Subject
-};
+_Class["default"].belongsToMany(Subject, {
+  through: ClassesSubjects
+});
+
+Subject.belongsToMany(_Class["default"], {
+  through: ClassesSubjects
+});
+module.exports = Subject;

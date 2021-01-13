@@ -6,26 +6,28 @@ var _sequelize = require("sequelize");
 
 var _database = _interopRequireDefault(require("../config/database"));
 
-var classAttr = {
+var userAttr = {
   id: {
     type: _sequelize.DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true
   },
-  classCode: {
-    type: _sequelize.DataTypes.STRING,
-    allowNull: false,
-    unique: true
-  },
-  className: {
+  name: {
     type: _sequelize.DataTypes.STRING,
     allowNull: false
+  },
+  email: {
+    type: _sequelize.DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true
+    }
   }
 };
 
-var Class = _database["default"].define('Class', classAttr, {
-  tableName: "Classes",
+var Teacher = _database["default"].define('Teacher', userAttr, {
   timestamps: false
 });
 
-module.exports = Class;
+module.exports = Teacher;
