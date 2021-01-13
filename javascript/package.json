@@ -9,7 +9,7 @@
     "start": "node ./build/server.js",
     "prestart:dev": "npm run start:services ",
     "start:dev": "nodemon --exec babel-node src/server.js",
-    "start:services": "docker-compose up -d",
+    "start:services": "sudo docker-compose up -d",
     "lint": "eslint \"src/**/*.js\""
   },
   "license": "ISC",
@@ -22,6 +22,7 @@
     "http-status-codes": "^1.4.0",
     "mysql2": "^2.1.0",
     "sequelize": "^6.3.3",
+    "sequelize-cli": "^6.2.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
