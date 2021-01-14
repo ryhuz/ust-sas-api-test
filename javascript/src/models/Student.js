@@ -33,7 +33,11 @@ const Student = sequelize.define('Student', userAttr, {
     timestamps: false,
 })
 
-Student.belongsTo(Class);
-Class.hasMany(Student);
+Student.belongsTo(Class, {
+    foreignKey: 'classId'
+});
+Class.hasMany(Student, {
+    foreignKey: 'classId'
+});
 
 module.exports = Student;

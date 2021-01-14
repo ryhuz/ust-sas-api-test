@@ -5,22 +5,24 @@ import Teacher from './models/Teacher'
 import Student from './models/Student'
 import Subject from './models/Subjects'
 import Class from './models/Class'
+import { Lesson } from './models/JunctionTables'
 
 const router = Express.Router();
 
 router.use('/', HealthcheckController);
 
 router.get('/test', async (req, res) => {
-    console.log('test')
+    console.log('helloooo')
     try {
-        let teachers = await Teacher.findAll();
+        let classSub = await Lesson.findAll();
         let subjects = await Subject.findAll();
-        return res.sendStatus(204);
+        console.log(classSub)
+        return res.status(200).json({ subjects, classSub });
     } catch (e) {
+        console.log(e)
         return res.status(500);
     }
 })
-
 router.post('/test', async (req, res) => {
     console.log(req.body)
 
@@ -47,7 +49,6 @@ router.post('/test', async (req, res) => {
         return res.status(500);
     }
 })
-
 router.get('/testAssociate', async (req, res) => {
     console.log('find class')
     try {
@@ -72,6 +73,7 @@ router.get('/testAssociateR', async (req, res) => {
         return res.status(500);
     }
 })
+
 router.post('/register', async (req, res) => {
     let { teacher, students, subject } = req.body;
     let toClass = req.body.class;
@@ -95,7 +97,7 @@ router.post('/register', async (req, res) => {
                 return res.status(400).json({ error: "Failed to find/create subject" })
             }
         }
-        
+
         /* Class */
         if (toClass) {
             try {
@@ -106,7 +108,7 @@ router.post('/register', async (req, res) => {
                 });
                 /* Add subject to class */
                 if (thisSubject) {
-                    thisClass.addSubject(thisSubject);
+                    await thisClass.addSubject(thisSubject);
                 }
             } catch (classError) {
                 console.log(classError);
@@ -119,6 +121,17 @@ router.post('/register', async (req, res) => {
             try {
                 let findTeacher = await Teacher.findOne({ where: { email: teacher.email } });
                 thisTeacher = findTeacher ? findTeacher : await Teacher.create(teacher);
+
+                if (thisClass && thisSubject) {
+                    let classLearning = await Lesson.findOne({
+                        where: {
+                            classId: thisClass.id,
+                            subjectId: thisSubject.id,
+                        }
+                    })
+
+                    await thisTeacher.addLesson(classLearning);
+                }
             } catch (teacherError) {
                 console.log(teacherError);
                 return res.status(400).json({ error: "Failed to find/create teacher" })
@@ -159,6 +172,45 @@ router.post('/register', async (req, res) => {
     //     console.log(e)
     // }
     // return res.status(200).json({ msg: "test works" })
+})
+
+router.get('/reports/workload', async (req, res) => {
+    try {
+        let allSubjects = await Subject.findAll();
+        let workload = {};
+
+        let teachers = await Teacher.findAll({
+            include: {
+                model: Lesson,
+                through: {
+                    attributes: []
+                }
+            }
+        });
+
+        teachers.forEach(teacher => {
+            workload[teacher.name] = [];
+            let currTeacher = workload[teacher.name];
+            teacher.Lessons.forEach(lesson => {
+                let currSubject = allSubjects.find(s => s.id === lesson.SubjectId);
+                let currSubjectIdx = currTeacher.findIndex(sub => sub.subjectCode === currSubject.subjectCode);
+                if (currSubjectIdx > -1) {
+                    currTeacher[currSubjectIdx].numberOfClasses++;
+                } else {
+                    currTeacher.push({
+                        subjectCode: currSubject.subjectCode,
+                        subjectName: currSubject.subjectName,
+                        numberOfClasses: 1,
+                    })
+                }
+            })
+        })
+
+        return res.status(200).json({ workload });
+    } catch (e) {
+        console.log(e);
+        return res.status(500);
+    }
 })
 
 export default router;

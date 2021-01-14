@@ -31,18 +31,5 @@ const sequelize = new Sequelize(DB_SCHEMA, DB_USER, DB_PW, {
   }
 });
 
-// const db = {
-//   Student: sequelize.import('../models/Users'),
-//   Teacher: sequelize.import('../models/Users'),
-//   Class: sequelize.import('../models/Class'),
-//   Subject: sequelize.import('../models/Subject'),
-// }
-
-// Object.keys(db).forEach((model) => {
-//   if ('associate' in db[model]) {
-//     db[model].associate(db);
-//   }
-// })
-
 export default sequelize;
 

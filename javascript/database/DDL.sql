@@ -38,22 +38,22 @@ SELECT "Classes table created";
 ALTER TABLE Students
 ADD FOREIGN KEY (classId) REFERENCES Classes(id);
 
-CREATE TABLE ClassesSubjects (
-    classSubjectIndex int NOT NULL AUTO_INCREMENT,
+CREATE TABLE Lessons (
+    lessonId int NOT NULL AUTO_INCREMENT,
     subjectId int NOT NULL,
     classId int NOT NULL,
-    PRIMARY KEY (classSubjectIndex),
+    PRIMARY KEY (lessonId),
     FOREIGN KEY (subjectId) REFERENCES Subjects(id),
     FOREIGN KEY (classId) REFERENCES Classes(id),
     CONSTRAINT PK_ClassesSubjects UNIQUE (subjectId,classId)
 );
-SELECT "ClassesSubjects junction table created";
--- CREATE TABLE TeachersTeaching (
---     teacherId int NOT NULL,
---     classSubjectId int NOT NULL,
---     UNIQUE (classSubjectId),
---     FOREIGN KEY (teacherId) REFERENCES Teachers(id),
---     FOREIGN KEY (classSubjectId) REFERENCES ClassesSubjects(classSubjectIndex),
---     CONSTRAINT PK_TCS PRIMARY KEY (teacherId,classSubjectId)
--- );
--- SELECT "TeachersTeaching junction table created";
+SELECT "Lesson junction table created";
+
+CREATE TABLE TeacherLessons (
+    lessonId int NOT NULL,
+    teacherId int NOT NULL,
+    FOREIGN KEY (teacherId) REFERENCES Teachers(id),
+    FOREIGN KEY (lessonId) REFERENCES Lessons(lessonId),
+    CONSTRAINT PK_TCS PRIMARY KEY (teacherId,lessonId)
+);
+SELECT "TeachersTeaching junction table created";

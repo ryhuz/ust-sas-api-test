@@ -1,16 +1,26 @@
-# Interview Assignment (v2.0.1)
+# UST School Administration Systems API Test
 
-This package contains the base code for the interview assignment.<br>
-You can add additional library that will aid you in fulfiling the requirements.
-<br>
-<br>
-Please read through NodeJS_Assessment.pdf carefully before you attempt.
+*Node Version*
+```
+v15.4.0
+```
 
-## Prerequisites
-- NodeJS v12.x.x
-- Docker
+## Initialising the API server
+- Install dependencies
+```
+npm install
+```
+- Start server
+```
+npm start
+```
+This will start an docker container, and migrate the database from /database/DDL.sql
 
 <br>
+
+## API Docuemntation
+
+
 
 ## Package Structure
 | S/N | Name | Type | Description |
