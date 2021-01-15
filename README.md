@@ -31,29 +31,30 @@ http://localhost:3000/api
 ```
 #### method: `GET`
 #### expected response: `200 OK`
-    
+
+
 ### Registering A New Lesson With Teachers, Students, Classes, and Subject
 ```
 /register
 ```
- * method: POST
- * required payload: 
-   1. teacher
-     * name
-     * email
-   1. students (array of)
-     * name
-     * email
-   1. subject
-     * name
-     * subjectCode
-   1. class
-     * name
-     * classCode
-        
-   All fields must be provided.
+#### method: `POST`
+#### required payload: 
+1. teacher
+    * name
+    * email
+1. students (array of)
+    * name
+    * email
+1. subject
+    * name
+    * subjectCode
+1. class
+    * name
+    * classCode
+    
+*All fields must be provided.*
       
-   Example body:
+##### Example body:
  ```
  {
    "students": [
@@ -79,8 +80,9 @@ http://localhost:3000/api
     }
  }
  ```
- * expected response: 204 NO CONTENT
-   
+ #### expected response: `204 NO CONTENT`
+
+
 ### Retrieving Overall Workload
 ```
 /reports/workload
