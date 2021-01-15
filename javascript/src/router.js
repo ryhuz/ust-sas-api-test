@@ -22,36 +22,43 @@ router.post('/register', async (req, res) => {
             error: `Missing items: ${!teacher ? "Teacher" : ""} ${!students ? "Students" : ""} ${!subject ? "Subject" : ""} ${!toClass ? "Class" : ""}`
         })
     }
+
     /* Check for empty fields */
+    function validCheck(param) {
+        param = `${param}`;
+        if (param.trim() === "") { return false }
+        else { return true }
+    }
+
     let emptyField = [];
     for (let student of students) {
         let anyEmpty = false;
-        if (student.name.trim() === "") {
+        if (!validCheck(student.name)) {
             emptyField.push('Student Name');
             anyEmpty = true;
         }
-        if (student.email.trim() === "") {
+        if (!validCheck(student.email)) {
             emptyField.push('Student Email');
             anyEmpty = true;
         }
         if (anyEmpty) break;
     }
-    if (teacher.name.trim() === "") {
+    if (!validCheck(teacher.name)) {
         emptyField.push('Teacher Name');
     }
-    if (teacher.email.trim() === "") {
+    if (!validCheck(teacher.email)) {
         emptyField.push('Teacher Email');
     }
-    if (subject.name.trim() === "") {
+    if (!validCheck(subject.name)) {
         emptyField.push('Subject Name');
     }
-    if (subject.subjectCode.trim() === "") {
+    if (!validCheck(subject.subjectCode)) {
         emptyField.push('Subject Code');
     }
-    if (toClass.name.trim() === "") {
+    if (!validCheck(toClass.name)) {
         emptyField.push('Class Name');
     }
-    if (toClass.classCode.trim() === "") {
+    if (!validCheck(toClass.classCode)) {
         emptyField.push('Class Code');
     }
     /* Return error if any empty fields */

@@ -36,17 +36,27 @@ var router = _express["default"].Router();
 router.use('/', _HealthcheckController["default"]);
 router.post('/register', /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
-    var _req$body, teacher, students, subject, toClass, thisTeacher, thisSubject, thisClass, emptyField, _iterator, _step, _student, anyEmpty, findSubject, findClass, findTeacher, classLearning, _iterator2, _step2, student, findStudent, thisStudent;
+    var _req$body, teacher, students, subject, toClass, thisTeacher, thisSubject, thisClass, validCheck, emptyField, _iterator, _step, _student, anyEmpty, findSubject, findClass, findTeacher, classLearning, _iterator2, _step2, student, findStudent, thisStudent;
 
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            validCheck = function _validCheck(param) {
+              param = "".concat(param);
+
+              if (param.trim() === "") {
+                return false;
+              } else {
+                return true;
+              }
+            };
+
             _req$body = req.body, teacher = _req$body.teacher, students = _req$body.students, subject = _req$body.subject;
             toClass = req.body["class"];
 
             if (!(!teacher || !students || !subject || !toClass)) {
-              _context.next = 4;
+              _context.next = 5;
               break;
             }
 
@@ -54,90 +64,90 @@ router.post('/register', /*#__PURE__*/function () {
               error: "Missing items: ".concat(!teacher ? "Teacher" : "", " ").concat(!students ? "Students" : "", " ").concat(!subject ? "Subject" : "", " ").concat(!toClass ? "Class" : "")
             }));
 
-          case 4:
+          case 5:
             /* Check for empty fields */
             emptyField = [];
             _iterator = _createForOfIteratorHelper(students);
-            _context.prev = 6;
+            _context.prev = 7;
 
             _iterator.s();
 
-          case 8:
+          case 9:
             if ((_step = _iterator.n()).done) {
-              _context.next = 17;
+              _context.next = 18;
               break;
             }
 
             _student = _step.value;
             anyEmpty = false;
 
-            if (_student.name.trim() === "") {
+            if (!validCheck(_student.name)) {
               emptyField.push('Student Name');
               anyEmpty = true;
             }
 
-            if (_student.email.trim() === "") {
+            if (!validCheck(_student.email)) {
               emptyField.push('Student Email');
               anyEmpty = true;
             }
 
             if (!anyEmpty) {
-              _context.next = 15;
+              _context.next = 16;
               break;
             }
 
-            return _context.abrupt("break", 17);
+            return _context.abrupt("break", 18);
 
-          case 15:
-            _context.next = 8;
+          case 16:
+            _context.next = 9;
             break;
 
-          case 17:
-            _context.next = 22;
+          case 18:
+            _context.next = 23;
             break;
 
-          case 19:
-            _context.prev = 19;
-            _context.t0 = _context["catch"](6);
+          case 20:
+            _context.prev = 20;
+            _context.t0 = _context["catch"](7);
 
             _iterator.e(_context.t0);
 
-          case 22:
-            _context.prev = 22;
+          case 23:
+            _context.prev = 23;
 
             _iterator.f();
 
-            return _context.finish(22);
+            return _context.finish(23);
 
-          case 25:
-            if (teacher.name.trim() === "") {
+          case 26:
+            if (!validCheck(teacher.name)) {
               emptyField.push('Teacher Name');
             }
 
-            if (teacher.email.trim() === "") {
+            if (!validCheck(teacher.email)) {
               emptyField.push('Teacher Email');
             }
 
-            if (subject.name.trim() === "") {
+            if (!validCheck(subject.name)) {
               emptyField.push('Subject Name');
             }
 
-            if (subject.subjectCode.trim() === "") {
+            if (!validCheck(subject.subjectCode)) {
               emptyField.push('Subject Code');
             }
 
-            if (toClass.name.trim() === "") {
+            if (!validCheck(toClass.name)) {
               emptyField.push('Class Name');
             }
 
-            if (toClass.classCode.trim() === "") {
+            if (!validCheck(toClass.classCode)) {
               emptyField.push('Class Code');
             }
             /* Return error if any empty fields */
 
 
             if (!emptyField.length) {
-              _context.next = 33;
+              _context.next = 34;
               break;
             }
 
@@ -145,130 +155,130 @@ router.post('/register', /*#__PURE__*/function () {
               error: "Missing fields: ".concat(emptyField.join(', '))
             }));
 
-          case 33:
-            _context.prev = 33;
+          case 34:
             _context.prev = 34;
-            _context.next = 37;
+            _context.prev = 35;
+            _context.next = 38;
             return _Subject["default"].findOne({
               where: {
                 subjectCode: subject.subjectCode
               }
             });
 
-          case 37:
+          case 38:
             findSubject = _context.sent;
 
             if (!findSubject) {
-              _context.next = 42;
+              _context.next = 43;
               break;
             }
 
             _context.t1 = findSubject;
-            _context.next = 45;
+            _context.next = 46;
             break;
 
-          case 42:
-            _context.next = 44;
+          case 43:
+            _context.next = 45;
             return _Subject["default"].create({
               subjectCode: subject.subjectCode,
               subjectName: subject.name
             });
 
-          case 44:
+          case 45:
             _context.t1 = _context.sent;
 
-          case 45:
+          case 46:
             thisSubject = _context.t1;
-            _context.next = 52;
+            _context.next = 53;
             break;
 
-          case 48:
-            _context.prev = 48;
-            _context.t2 = _context["catch"](34);
+          case 49:
+            _context.prev = 49;
+            _context.t2 = _context["catch"](35);
             console.log(_context.t2);
             return _context.abrupt("return", res.status(400).json({
               error: "Failed to find/create subject"
             }));
 
-          case 52:
-            _context.prev = 52;
-            _context.next = 55;
+          case 53:
+            _context.prev = 53;
+            _context.next = 56;
             return _Class["default"].findOne({
               where: {
                 classCode: toClass.classCode
               }
             });
 
-          case 55:
+          case 56:
             findClass = _context.sent;
 
             if (!findClass) {
-              _context.next = 60;
+              _context.next = 61;
               break;
             }
 
             _context.t3 = findClass;
-            _context.next = 63;
+            _context.next = 64;
             break;
 
-          case 60:
-            _context.next = 62;
+          case 61:
+            _context.next = 63;
             return _Class["default"].create({
               classCode: toClass.classCode,
               className: toClass.name
             });
 
-          case 62:
+          case 63:
             _context.t3 = _context.sent;
 
-          case 63:
+          case 64:
             thisClass = _context.t3;
-            _context.next = 66;
+            _context.next = 67;
             return thisClass.addSubject(thisSubject);
 
-          case 66:
-            _context.next = 72;
+          case 67:
+            _context.next = 73;
             break;
 
-          case 68:
-            _context.prev = 68;
-            _context.t4 = _context["catch"](52);
+          case 69:
+            _context.prev = 69;
+            _context.t4 = _context["catch"](53);
             console.log(_context.t4);
             return _context.abrupt("return", res.status(400).json({
               error: "Failed to find/create class"
             }));
 
-          case 72:
-            _context.prev = 72;
-            _context.next = 75;
+          case 73:
+            _context.prev = 73;
+            _context.next = 76;
             return _Teacher["default"].findOne({
               where: {
                 email: teacher.email
               }
             });
 
-          case 75:
+          case 76:
             findTeacher = _context.sent;
 
             if (!findTeacher) {
-              _context.next = 80;
+              _context.next = 81;
               break;
             }
 
             _context.t5 = findTeacher;
-            _context.next = 83;
+            _context.next = 84;
             break;
 
-          case 80:
-            _context.next = 82;
+          case 81:
+            _context.next = 83;
             return _Teacher["default"].create(teacher);
 
-          case 82:
+          case 83:
             _context.t5 = _context.sent;
 
-          case 83:
+          case 84:
             thisTeacher = _context.t5;
-            _context.next = 86;
+            _context.next = 87;
             return _JunctionTables.Lesson.findOne({
               where: {
                 classId: thisClass.id,
@@ -276,22 +286,22 @@ router.post('/register', /*#__PURE__*/function () {
               }
             });
 
-          case 86:
+          case 87:
             classLearning = _context.sent;
-            _context.next = 89;
+            _context.next = 90;
             return thisTeacher.addLesson(classLearning);
 
-          case 89:
-            _context.next = 99;
+          case 90:
+            _context.next = 100;
             break;
 
-          case 91:
-            _context.prev = 91;
-            _context.t6 = _context["catch"](72);
+          case 92:
+            _context.prev = 92;
+            _context.t6 = _context["catch"](73);
             console.log(_context.t6);
 
             if (!(_context.t6.errors[0].path === "email")) {
-              _context.next = 98;
+              _context.next = 99;
               break;
             }
 
@@ -299,89 +309,89 @@ router.post('/register', /*#__PURE__*/function () {
               error: "Invalid Teacher Email"
             }));
 
-          case 98:
+          case 99:
             return _context.abrupt("return", res.status(400).json({
               error: "Failed to find/create teacher"
             }));
 
-          case 99:
-            _context.prev = 99;
+          case 100:
+            _context.prev = 100;
             _iterator2 = _createForOfIteratorHelper(students);
-            _context.prev = 101;
+            _context.prev = 102;
 
             _iterator2.s();
 
-          case 103:
+          case 104:
             if ((_step2 = _iterator2.n()).done) {
-              _context.next = 119;
+              _context.next = 120;
               break;
             }
 
             student = _step2.value;
-            _context.next = 107;
+            _context.next = 108;
             return _Student["default"].findOne({
               where: {
                 email: student.email
               }
             });
 
-          case 107:
+          case 108:
             findStudent = _context.sent;
 
             if (!findStudent) {
-              _context.next = 112;
+              _context.next = 113;
               break;
             }
 
             _context.t7 = findStudent;
-            _context.next = 115;
+            _context.next = 116;
             break;
 
-          case 112:
-            _context.next = 114;
+          case 113:
+            _context.next = 115;
             return _Student["default"].create(student);
 
-          case 114:
+          case 115:
             _context.t7 = _context.sent;
 
-          case 115:
+          case 116:
             thisStudent = _context.t7;
 
             /* Add student to class */
             thisStudent.addClass(thisClass);
 
-          case 117:
-            _context.next = 103;
+          case 118:
+            _context.next = 104;
             break;
 
-          case 119:
-            _context.next = 124;
+          case 120:
+            _context.next = 125;
             break;
 
-          case 121:
-            _context.prev = 121;
-            _context.t8 = _context["catch"](101);
+          case 122:
+            _context.prev = 122;
+            _context.t8 = _context["catch"](102);
 
             _iterator2.e(_context.t8);
 
-          case 124:
-            _context.prev = 124;
+          case 125:
+            _context.prev = 125;
 
             _iterator2.f();
 
-            return _context.finish(124);
+            return _context.finish(125);
 
-          case 127:
-            _context.next = 137;
+          case 128:
+            _context.next = 138;
             break;
 
-          case 129:
-            _context.prev = 129;
-            _context.t9 = _context["catch"](99);
+          case 130:
+            _context.prev = 130;
+            _context.t9 = _context["catch"](100);
             console.log(_context.t9);
 
             if (!(_context.t9.errors[0].path === "email")) {
-              _context.next = 136;
+              _context.next = 137;
               break;
             }
 
@@ -389,26 +399,26 @@ router.post('/register', /*#__PURE__*/function () {
               error: "Invalid Student Email"
             }));
 
-          case 136:
+          case 137:
             return _context.abrupt("return", res.status(400).json({
               error: "Failed to find/create students"
             }));
 
-          case 137:
+          case 138:
             return _context.abrupt("return", res.sendStatus(204));
 
-          case 140:
-            _context.prev = 140;
-            _context.t10 = _context["catch"](33);
+          case 141:
+            _context.prev = 141;
+            _context.t10 = _context["catch"](34);
             console.log(_context.t10);
             return _context.abrupt("return", res.status(500));
 
-          case 144:
+          case 145:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[6, 19, 22, 25], [33, 140], [34, 48], [52, 68], [72, 91], [99, 129], [101, 121, 124, 127]]);
+    }, _callee, null, [[7, 20, 23, 26], [34, 141], [35, 49], [53, 69], [73, 92], [100, 130], [102, 122, 125, 128]]);
   }));
 
   return function (_x, _x2) {
@@ -444,15 +454,18 @@ router.get('/reports/workload', /*#__PURE__*/function () {
           case 7:
             teachers = _context2.sent;
             teachers.forEach(function (teacher) {
+              /* Create teacher entry in workload */
               workload[teacher.name] = [];
               var currTeacher = workload[teacher.name];
               teacher.Lessons.forEach(function (lesson) {
+                /* Check if subject is already listed in teacher's load */
                 var currSubject = allSubjects.find(function (s) {
                   return s.id === lesson.SubjectId;
                 });
                 var currSubjectIdx = currTeacher.findIndex(function (sub) {
                   return sub.subjectCode === currSubject.subjectCode;
                 });
+                /* Update load of subject */
 
                 if (currSubjectIdx > -1) {
                   currTeacher[currSubjectIdx].numberOfClasses++;
