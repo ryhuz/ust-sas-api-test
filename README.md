@@ -39,17 +39,17 @@ http://localhost:3000/api
     * method: POST
     * required payload: 
        1. teacher
-         * name
-         * email
+          * name
+          * email
        1. students (array of)
-         * name
-         * email
+          * name
+          * email
        1. subject
-         * name
-         * subjectCode
+          * name
+          * subjectCode
        1. class
-         * name
-         * classCode
+          * name
+          * classCode
         
       All fields must be provided.
       
