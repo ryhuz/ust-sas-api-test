@@ -11,69 +11,6 @@ const router = Express.Router();
 
 router.use('/', HealthcheckController);
 
-router.get('/test', async (req, res) => {
-    console.log('helloooo')
-    try {
-        let students = await Student.findAll({ include: Class });
-        // let subjects = await Subject.findAll();
-        // console.log(classSub)
-        return res.status(200).json({ students });
-    } catch (e) {
-        console.log(e)
-        return res.status(500);
-    }
-})
-router.post('/test', async (req, res) => {
-    console.log(req.body)
-
-    let { students } = req.body;
-    let toClass = req.body.class;
-
-    try {
-        console.log('creating')
-        let thisClass = await Class.create({ classCode: toClass.classCode, className: toClass.name });
-        let theseStudents = [];
-        for (let student of students) {
-            let studentData = {
-                ...student,
-                classId: thisClass.id,
-            }
-            console.log(studentData)
-            let thisStudent = await Student.create(studentData);
-            theseStudents.push(thisStudent);
-        }
-
-        return res.status(200).json({ thisClass, theseStudents })
-    } catch (e) {
-        console.log(e)
-        return res.status(500);
-    }
-})
-router.get('/testAssociate', async (req, res) => {
-    console.log('find class')
-    try {
-        console.log('finding')
-        let classes = await Class.findAll({ include: Student });
-
-        return res.status(200).json({ classes })
-    } catch (e) {
-        console.log(e)
-        return res.status(500);
-    }
-})
-router.get('/testAssociateR', async (req, res) => {
-    console.log('find student')
-    try {
-        console.log('finding')
-        let students = await Student.findAll({ include: Class });
-
-        return res.status(200).json({ students })
-    } catch (e) {
-        console.log(e)
-        return res.status(500);
-    }
-})
-
 router.post('/register', async (req, res) => {
     let { teacher, students, subject } = req.body;
     let toClass = req.body.class;
@@ -206,6 +143,7 @@ router.get('/reports/workload', async (req, res) => {
         let allSubjects = await Subject.findAll();
         let workload = {};
 
+        /* Get all teachers */
         let teachers = await Teacher.findAll({
             include: {
                 model: Lesson,
@@ -216,11 +154,14 @@ router.get('/reports/workload', async (req, res) => {
         });
 
         teachers.forEach(teacher => {
+            /* Create teacher entry in workload */
             workload[teacher.name] = [];
             let currTeacher = workload[teacher.name];
             teacher.Lessons.forEach(lesson => {
+                /* Check if subject is already listed in teacher's load */
                 let currSubject = allSubjects.find(s => s.id === lesson.SubjectId);
                 let currSubjectIdx = currTeacher.findIndex(sub => sub.subjectCode === currSubject.subjectCode);
+                /* Update load of subject */
                 if (currSubjectIdx > -1) {
                     currTeacher[currSubjectIdx].numberOfClasses++;
                 } else {
@@ -233,7 +174,7 @@ router.get('/reports/workload', async (req, res) => {
             })
         })
 
-        return res.status(200).json({ workload });
+        return res.status(200).json(workload);
     } catch (e) {
         console.log(e);
         return res.status(500);
