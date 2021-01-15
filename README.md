@@ -25,6 +25,8 @@ All reqeusts should be made to this base URL:
 http://localhost:3000/api
 ```
 
+---
+
 ### Test
 ```
 /healthcheck
