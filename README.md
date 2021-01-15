@@ -29,14 +29,8 @@ http://localhost:3000/api
 ```
 /healthcheck
 ```
-#### method:
-```
-GET
-```
-#### expected response:
-```
-200 OK
-```
+#### method: `GET`
+#### expected response: `200 OK`
     
 ### Registering A New Lesson With Teachers, Students, Classes, and Subject
 ```
