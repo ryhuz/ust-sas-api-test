@@ -79,15 +79,50 @@ router.post('/register', async (req, res) => {
     let toClass = req.body.class;
     let thisTeacher, thisSubject, thisClass;
 
+    /* Check request body has all require parameters */
     if (!teacher || !students || !subject || !toClass) {
         return res.status(400).json({
-            error: `Missing fields: ${!teacher ? "Teacher" : ""} ${!students ? "Students" : ""} ${!subject ? "Subject" : ""} ${!toClass ? "Class" : ""}`
+            error: `Missing items: ${!teacher ? "Teacher" : ""} ${!students ? "Students" : ""} ${!subject ? "Subject" : ""} ${!toClass ? "Class" : ""}`
         })
     }
-
-    /* do validation on emails */
-    /* do trim validation on names and codes*/
-    /* check that a class is provided if student data is sent over */
+    /* Check for empty fields */
+    let emptyField = [];
+    for (let student of students) {
+        let anyEmpty = false;
+        if (student.name.trim() === "") {
+            emptyField.push('Student Name');
+            anyEmpty = true;
+        }
+        if (student.email.trim() === "") {
+            emptyField.push('Student Email');
+            anyEmpty = true;
+        }
+        if (anyEmpty) break;
+    }
+    if (teacher.name.trim() === "") {
+        emptyField.push('Teacher Name');
+    }
+    if (teacher.email.trim() === "") {
+        emptyField.push('Teacher Email');
+    }
+    if (subject.name.trim() === "") {
+        emptyField.push('Subject Name');
+    }
+    if (subject.subjectCode.trim() === "") {
+        emptyField.push('Subject Code');
+    }
+    if (toClass.name.trim() === "") {
+        emptyField.push('Class Name');
+    }
+    if (toClass.classCode.trim() === "") {
+        emptyField.push('Class Code');
+    }
+    /* Return error if any empty fields */
+    if (emptyField.length) {
+        return res.status(400).json({
+            error: `Missing fields: ${emptyField.join(', ')}`
+        })
+    }
 
     try {
         /* Subject */
@@ -133,21 +168,29 @@ router.post('/register', async (req, res) => {
 
         } catch (teacherError) {
             console.log(teacherError);
-            return res.status(400).json({ error: "Failed to find/create teacher" })
+            if (teacherError.errors[0].path === "email") {
+                return res.status(400).json({ error: "Invalid Teacher Email" })
+            } else {
+                return res.status(400).json({ error: "Failed to find/create teacher" })
+            }
         }
 
         /* Students */
         try {
             for (let student of students) {
                 let findStudent = await Student.findOne({ where: { email: student.email } });
-                findStudent ? console.log('student valid, now setting') : console.log('no such student. now creating')
                 let thisStudent = findStudent ? findStudent : await Student.create(student);
 
+                /* Add student to class */
                 thisStudent.addClass(thisClass);
             }
         } catch (studentError) {
             console.log(studentError);
-            return res.status(400).json({ error: "Failed to find/create students" })
+            if (studentError.errors[0].path === "email") {
+                return res.status(400).json({ error: "Invalid Student Email" })
+            } else {
+                return res.status(400).json({ error: "Failed to find/create students" })
+            }
         }
 
         return res.sendStatus(204);
@@ -156,16 +199,6 @@ router.post('/register', async (req, res) => {
         console.log(e);
         return res.status(500)
     }
-
-
-    // console.log(req.body)
-    // try {
-    //     let tester = await Teacher.create({ name: "myName", email: "myEmail@email.com" });
-    //     console.log(tester)
-    // } catch (e) {
-    //     console.log(e)
-    // }
-    // return res.status(200).json({ msg: "test works" })
 })
 
 router.get('/reports/workload', async (req, res) => {
