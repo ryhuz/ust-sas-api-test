@@ -47,17 +47,6 @@ var sequelize = new _sequelize["default"](DB_SCHEMA, DB_USER, DB_PW, {
   logging: function logging(msg) {
     LOG[DB_LOG_LEVEL](msg);
   }
-}); // const db = {
-//   Student: sequelize.import('../models/Users'),
-//   Teacher: sequelize.import('../models/Users'),
-//   Class: sequelize.import('../models/Class'),
-//   Subject: sequelize.import('../models/Subject'),
-// }
-// Object.keys(db).forEach((model) => {
-//   if ('associate' in db[model]) {
-//     db[model].associate(db);
-//   }
-// })
-
+});
 var _default = sequelize;
 exports["default"] = _default;

@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database'
-import Class from './Class'
 
 const userAttr = {
     id: {
@@ -20,24 +19,10 @@ const userAttr = {
             isEmail: true,
         }
     },
-    classId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Class,
-            key: 'id'
-        }
-    },
 }
 
 const Student = sequelize.define('Student', userAttr, {
     timestamps: false,
 })
-
-Student.belongsTo(Class, {
-    foreignKey: 'classId'
-});
-Class.hasMany(Student, {
-    foreignKey: 'classId'
-});
 
 module.exports = Student;

@@ -21,9 +21,11 @@ var _Teacher = _interopRequireDefault(require("./models/Teacher"));
 
 var _Student = _interopRequireDefault(require("./models/Student"));
 
-var _Subjects = _interopRequireDefault(require("./models/Subjects"));
+var _Subject = _interopRequireDefault(require("./models/Subject"));
 
 var _Class = _interopRequireDefault(require("./models/Class"));
+
+var _JunctionTables = require("./models/JunctionTables");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -40,36 +42,36 @@ var router = _express["default"].Router();
 router.use('/', _HealthcheckController["default"]);
 router.get('/test', /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
-    var teachers, subjects;
+    var students;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log('test');
+            console.log('helloooo');
             _context.prev = 1;
             _context.next = 4;
-            return _Teacher["default"].findAll();
+            return _Student["default"].findAll({
+              include: _Class["default"]
+            });
 
           case 4:
-            teachers = _context.sent;
-            _context.next = 7;
-            return _Subjects["default"].findAll();
+            students = _context.sent;
+            return _context.abrupt("return", res.status(200).json({
+              students: students
+            }));
 
-          case 7:
-            subjects = _context.sent;
-            return _context.abrupt("return", res.sendStatus(204));
-
-          case 11:
-            _context.prev = 11;
+          case 8:
+            _context.prev = 8;
             _context.t0 = _context["catch"](1);
+            console.log(_context.t0);
             return _context.abrupt("return", res.status(500));
 
-          case 14:
+          case 12:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[1, 11]]);
+    }, _callee, null, [[1, 8]]);
   }));
 
   return function (_x, _x2) {
@@ -246,7 +248,7 @@ router.get('/testAssociateR', /*#__PURE__*/function () {
 }());
 router.post('/register', /*#__PURE__*/function () {
   var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res) {
-    var _req$body, teacher, students, subject, toClass, thisTeacher, thisSubject, thisClass, theseStudents, findTeacher, findSubject, findClass, _iterator2, _step2, student, findStudent, thisStudent;
+    var _req$body, teacher, students, subject, toClass, thisTeacher, thisSubject, thisClass, findSubject, findClass, findTeacher, classLearning, _iterator2, _step2, student, findStudent, thisStudent;
 
     return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) {
@@ -254,43 +256,50 @@ router.post('/register', /*#__PURE__*/function () {
           case 0:
             _req$body = req.body, teacher = _req$body.teacher, students = _req$body.students, subject = _req$body.subject;
             toClass = req.body["class"];
-            _context5.prev = 2;
 
-            if (!teacher) {
-              _context5.next = 23;
+            if (!(!teacher || !students || !subject || !toClass)) {
+              _context5.next = 4;
               break;
             }
 
-            console.log('-----------------in teacher---------------');
+            return _context5.abrupt("return", res.status(400).json({
+              error: "Missing fields: ".concat(!teacher ? "Teacher" : "", " ").concat(!students ? "Students" : "", " ").concat(!subject ? "Subject" : "", " ").concat(!toClass ? "Class" : "")
+            }));
+
+          case 4:
+            _context5.prev = 4;
             _context5.prev = 5;
             _context5.next = 8;
-            return _Teacher["default"].findOne({
+            return _Subject["default"].findOne({
               where: {
-                email: teacher.email
+                subjectCode: subject.subjectCode
               }
             });
 
           case 8:
-            findTeacher = _context5.sent;
+            findSubject = _context5.sent;
 
-            if (!findTeacher) {
+            if (!findSubject) {
               _context5.next = 13;
               break;
             }
 
-            _context5.t0 = findTeacher;
+            _context5.t0 = findSubject;
             _context5.next = 16;
             break;
 
           case 13:
             _context5.next = 15;
-            return _Teacher["default"].create(teacher);
+            return _Subject["default"].create({
+              subjectCode: subject.subjectCode,
+              subjectName: subject.name
+            });
 
           case 15:
             _context5.t0 = _context5.sent;
 
           case 16:
-            thisTeacher = _context5.t0;
+            thisSubject = _context5.t0;
             _context5.next = 23;
             break;
 
@@ -299,233 +308,279 @@ router.post('/register', /*#__PURE__*/function () {
             _context5.t1 = _context5["catch"](5);
             console.log(_context5.t1);
             return _context5.abrupt("return", res.status(400).json({
-              error: "Failed to find/create teacher"
-            }));
-
-          case 23:
-            if (!subject) {
-              _context5.next = 43;
-              break;
-            }
-
-            console.log('-----------------in subject---------------');
-            _context5.prev = 25;
-            _context5.next = 28;
-            return _Subjects["default"].findOne({
-              where: {
-                subjectCode: subject.subjectCode
-              }
-            });
-
-          case 28:
-            findSubject = _context5.sent;
-
-            if (!findSubject) {
-              _context5.next = 33;
-              break;
-            }
-
-            _context5.t2 = findSubject;
-            _context5.next = 36;
-            break;
-
-          case 33:
-            _context5.next = 35;
-            return _Subjects["default"].create({
-              subjectCode: subject.subjectCode,
-              subjectName: subject.name
-            });
-
-          case 35:
-            _context5.t2 = _context5.sent;
-
-          case 36:
-            thisSubject = _context5.t2;
-            _context5.next = 43;
-            break;
-
-          case 39:
-            _context5.prev = 39;
-            _context5.t3 = _context5["catch"](25);
-            console.log(_context5.t3);
-            return _context5.abrupt("return", res.status(400).json({
               error: "Failed to find/create subject"
             }));
 
-          case 43:
-            if (!toClass) {
-              _context5.next = 64;
-              break;
-            }
-
-            console.log('-----------------in class---------------');
-            _context5.prev = 45;
-            _context5.next = 48;
+          case 23:
+            _context5.prev = 23;
+            _context5.next = 26;
             return _Class["default"].findOne({
               where: {
                 classCode: toClass.classCode
               }
             });
 
-          case 48:
+          case 26:
             findClass = _context5.sent;
 
             if (!findClass) {
-              _context5.next = 53;
+              _context5.next = 31;
               break;
             }
 
-            _context5.t4 = findClass;
-            _context5.next = 56;
+            _context5.t2 = findClass;
+            _context5.next = 34;
             break;
 
-          case 53:
-            _context5.next = 55;
+          case 31:
+            _context5.next = 33;
             return _Class["default"].create({
               classCode: toClass.classCode,
               className: toClass.name
             });
 
-          case 55:
-            _context5.t4 = _context5.sent;
+          case 33:
+            _context5.t2 = _context5.sent;
 
-          case 56:
-            thisClass = _context5.t4;
+          case 34:
+            thisClass = _context5.t2;
+            _context5.next = 37;
+            return thisClass.addSubject(thisSubject);
 
-            if (thisSubject) {
-              console.log('-----------------joinging class and subject---------------');
-              thisClass.addSubject(thisSubject);
-            }
-
-            _context5.next = 64;
+          case 37:
+            _context5.next = 43;
             break;
 
-          case 60:
-            _context5.prev = 60;
-            _context5.t5 = _context5["catch"](45);
-            console.log(_context5.t5);
+          case 39:
+            _context5.prev = 39;
+            _context5.t3 = _context5["catch"](23);
+            console.log(_context5.t3);
             return _context5.abrupt("return", res.status(400).json({
               error: "Failed to find/create class"
             }));
 
-          case 64:
-            if (!students) {
-              _context5.next = 106;
+          case 43:
+            _context5.prev = 43;
+            _context5.next = 46;
+            return _Teacher["default"].findOne({
+              where: {
+                email: teacher.email
+              }
+            });
+
+          case 46:
+            findTeacher = _context5.sent;
+
+            if (!findTeacher) {
+              _context5.next = 51;
               break;
             }
 
-            _context5.prev = 65;
-            console.log('-----------------in student---------------');
-            theseStudents = [];
+            _context5.t4 = findTeacher;
+            _context5.next = 54;
+            break;
+
+          case 51:
+            _context5.next = 53;
+            return _Teacher["default"].create(teacher);
+
+          case 53:
+            _context5.t4 = _context5.sent;
+
+          case 54:
+            thisTeacher = _context5.t4;
+            _context5.next = 57;
+            return _JunctionTables.Lesson.findOne({
+              where: {
+                classId: thisClass.id,
+                subjectId: thisSubject.id
+              }
+            });
+
+          case 57:
+            classLearning = _context5.sent;
+            _context5.next = 60;
+            return thisTeacher.addLesson(classLearning);
+
+          case 60:
+            _context5.next = 66;
+            break;
+
+          case 62:
+            _context5.prev = 62;
+            _context5.t5 = _context5["catch"](43);
+            console.log(_context5.t5);
+            return _context5.abrupt("return", res.status(400).json({
+              error: "Failed to find/create teacher"
+            }));
+
+          case 66:
+            _context5.prev = 66;
             _iterator2 = _createForOfIteratorHelper(students);
-            _context5.prev = 69;
+            _context5.prev = 68;
 
             _iterator2.s();
 
-          case 71:
+          case 70:
             if ((_step2 = _iterator2.n()).done) {
-              _context5.next = 90;
+              _context5.next = 87;
               break;
             }
 
             student = _step2.value;
-            console.log('finding student');
-            _context5.next = 76;
+            _context5.next = 74;
             return _Student["default"].findOne({
               where: {
                 email: student.email
               }
             });
 
-          case 76:
+          case 74:
             findStudent = _context5.sent;
             findStudent ? console.log('student valid, now setting') : console.log('no such student. now creating');
 
             if (!findStudent) {
-              _context5.next = 82;
+              _context5.next = 80;
               break;
             }
 
             _context5.t6 = findStudent;
-            _context5.next = 85;
+            _context5.next = 83;
             break;
+
+          case 80:
+            _context5.next = 82;
+            return _Student["default"].create(student);
 
           case 82:
-            _context5.next = 84;
-            return _Student["default"].create({
-              name: student.name,
-              email: student.email,
-              classId: thisClass.id
-            });
-
-          case 84:
             _context5.t6 = _context5.sent;
 
-          case 85:
+          case 83:
             thisStudent = _context5.t6;
-            console.log('pushing to the array');
-            theseStudents.push(thisStudent);
+            thisStudent.addClass(thisClass);
 
-          case 88:
-            _context5.next = 71;
+          case 85:
+            _context5.next = 70;
             break;
 
-          case 90:
-            _context5.next = 95;
+          case 87:
+            _context5.next = 92;
             break;
 
-          case 92:
-            _context5.prev = 92;
-            _context5.t7 = _context5["catch"](69);
+          case 89:
+            _context5.prev = 89;
+            _context5.t7 = _context5["catch"](68);
 
             _iterator2.e(_context5.t7);
 
-          case 95:
-            _context5.prev = 95;
+          case 92:
+            _context5.prev = 92;
 
             _iterator2.f();
 
-            return _context5.finish(95);
+            return _context5.finish(92);
 
-          case 98:
-            console.log('done');
-            console.log(theseStudents);
-            _context5.next = 106;
+          case 95:
+            _context5.next = 101;
             break;
 
-          case 102:
-            _context5.prev = 102;
-            _context5.t8 = _context5["catch"](65);
+          case 97:
+            _context5.prev = 97;
+            _context5.t8 = _context5["catch"](66);
             console.log(_context5.t8);
             return _context5.abrupt("return", res.status(400).json({
               error: "Failed to find/create students"
             }));
 
-          case 106:
-            console.log('done all the tasks');
-            return _context5.abrupt("return", res.status(200).json({
-              thisTeacher: thisTeacher,
-              thisSubject: thisSubject,
-              thisClass: thisClass,
-              theseStudents: theseStudents
-            }));
+          case 101:
+            return _context5.abrupt("return", res.sendStatus(204));
 
-          case 110:
-            _context5.prev = 110;
-            _context5.t9 = _context5["catch"](2);
+          case 104:
+            _context5.prev = 104;
+            _context5.t9 = _context5["catch"](4);
             console.log(_context5.t9);
             return _context5.abrupt("return", res.status(500));
 
-          case 114:
+          case 108:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[2, 110], [5, 19], [25, 39], [45, 60], [65, 102], [69, 92, 95, 98]]);
+    }, _callee5, null, [[4, 104], [5, 19], [23, 39], [43, 62], [66, 97], [68, 89, 92, 95]]);
   }));
 
   return function (_x9, _x10) {
     return _ref5.apply(this, arguments);
+  };
+}());
+router.get('/reports/workload', /*#__PURE__*/function () {
+  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res) {
+    var allSubjects, workload, teachers;
+    return _regenerator["default"].wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.prev = 0;
+            _context6.next = 3;
+            return _Subject["default"].findAll();
+
+          case 3:
+            allSubjects = _context6.sent;
+            workload = {};
+            _context6.next = 7;
+            return _Teacher["default"].findAll({
+              include: {
+                model: _JunctionTables.Lesson,
+                through: {
+                  attributes: []
+                }
+              }
+            });
+
+          case 7:
+            teachers = _context6.sent;
+            teachers.forEach(function (teacher) {
+              workload[teacher.name] = [];
+              var currTeacher = workload[teacher.name];
+              teacher.Lessons.forEach(function (lesson) {
+                var currSubject = allSubjects.find(function (s) {
+                  return s.id === lesson.SubjectId;
+                });
+                var currSubjectIdx = currTeacher.findIndex(function (sub) {
+                  return sub.subjectCode === currSubject.subjectCode;
+                });
+
+                if (currSubjectIdx > -1) {
+                  currTeacher[currSubjectIdx].numberOfClasses++;
+                } else {
+                  currTeacher.push({
+                    subjectCode: currSubject.subjectCode,
+                    subjectName: currSubject.subjectName,
+                    numberOfClasses: 1
+                  });
+                }
+              });
+            });
+            return _context6.abrupt("return", res.status(200).json({
+              workload: workload
+            }));
+
+          case 12:
+            _context6.prev = 12;
+            _context6.t0 = _context6["catch"](0);
+            console.log(_context6.t0);
+            return _context6.abrupt("return", res.status(500));
+
+          case 16:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6, null, [[0, 12]]);
+  }));
+
+  return function (_x11, _x12) {
+    return _ref6.apply(this, arguments);
   };
 }());
 var _default = router;

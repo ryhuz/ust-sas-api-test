@@ -11,7 +11,6 @@ CREATE TABLE Students (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
-    classId int NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (email)
 );
@@ -35,8 +34,14 @@ CREATE TABLE Classes (
 );
 SELECT "Classes table created";
 
-ALTER TABLE Students
-ADD FOREIGN KEY (classId) REFERENCES Classes(id);
+CREATE TABLE ClassRegister (
+    studentId int NOT NULL,
+    classId int NOT NULL,
+    FOREIGN KEY (studentId) REFERENCES Students(id),
+    FOREIGN KEY (classId) REFERENCES Classes(id),
+    CONSTRAINT PK_ClassesSubjects UNIQUE (studentId,classId)
+);
+SELECT "ClassRegister junction table created";
 
 CREATE TABLE Lessons (
     lessonId int NOT NULL AUTO_INCREMENT,

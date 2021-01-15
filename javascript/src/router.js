@@ -3,7 +3,7 @@ import HealthcheckController from './controllers/HealthcheckController';
 
 import Teacher from './models/Teacher'
 import Student from './models/Student'
-import Subject from './models/Subjects'
+import Subject from './models/Subject'
 import Class from './models/Class'
 import { Lesson } from './models/JunctionTables'
 
@@ -14,10 +14,10 @@ router.use('/', HealthcheckController);
 router.get('/test', async (req, res) => {
     console.log('helloooo')
     try {
-        let classSub = await Lesson.findAll();
-        let subjects = await Subject.findAll();
-        console.log(classSub)
-        return res.status(200).json({ subjects, classSub });
+        let students = await Student.findAll({ include: Class });
+        // let subjects = await Subject.findAll();
+        // console.log(classSub)
+        return res.status(200).json({ students });
     } catch (e) {
         console.log(e)
         return res.status(500);
@@ -77,7 +77,13 @@ router.get('/testAssociateR', async (req, res) => {
 router.post('/register', async (req, res) => {
     let { teacher, students, subject } = req.body;
     let toClass = req.body.class;
-    let thisTeacher, thisSubject, thisClass, theseStudents;
+    let thisTeacher, thisSubject, thisClass;
+
+    if (!teacher || !students || !subject || !toClass) {
+        return res.status(400).json({
+            error: `Missing fields: ${!teacher ? "Teacher" : ""} ${!students ? "Students" : ""} ${!subject ? "Subject" : ""} ${!toClass ? "Class" : ""}`
+        })
+    }
 
     /* do validation on emails */
     /* do trim validation on names and codes*/
@@ -85,79 +91,67 @@ router.post('/register', async (req, res) => {
 
     try {
         /* Subject */
-        if (subject) {
-            try {
-                let findSubject = await Subject.findOne({ where: { subjectCode: subject.subjectCode } });
-                thisSubject = findSubject ? findSubject : await Subject.create({
-                    subjectCode: subject.subjectCode,
-                    subjectName: subject.name,
-                });
-            } catch (subjectError) {
-                console.log(subjectError);
-                return res.status(400).json({ error: "Failed to find/create subject" })
-            }
+        try {
+            let findSubject = await Subject.findOne({ where: { subjectCode: subject.subjectCode } });
+            thisSubject = findSubject ? findSubject : await Subject.create({
+                subjectCode: subject.subjectCode,
+                subjectName: subject.name,
+            });
+        } catch (subjectError) {
+            console.log(subjectError);
+            return res.status(400).json({ error: "Failed to find/create subject" })
         }
 
         /* Class */
-        if (toClass) {
-            try {
-                let findClass = await Class.findOne({ where: { classCode: toClass.classCode } });
-                thisClass = findClass ? findClass : await Class.create({
-                    classCode: toClass.classCode,
-                    className: toClass.name,
-                });
-                /* Add subject to class */
-                if (thisSubject) {
-                    await thisClass.addSubject(thisSubject);
-                }
-            } catch (classError) {
-                console.log(classError);
-                return res.status(400).json({ error: "Failed to find/create class" })
-            }
+        try {
+            let findClass = await Class.findOne({ where: { classCode: toClass.classCode } });
+            thisClass = findClass ? findClass : await Class.create({
+                classCode: toClass.classCode,
+                className: toClass.name,
+            });
+            /* Add subject to class */
+            await thisClass.addSubject(thisSubject);
+
+        } catch (classError) {
+            console.log(classError);
+            return res.status(400).json({ error: "Failed to find/create class" })
         }
 
         /* Teacher */
-        if (teacher) {
-            try {
-                let findTeacher = await Teacher.findOne({ where: { email: teacher.email } });
-                thisTeacher = findTeacher ? findTeacher : await Teacher.create(teacher);
+        try {
+            let findTeacher = await Teacher.findOne({ where: { email: teacher.email } });
+            thisTeacher = findTeacher ? findTeacher : await Teacher.create(teacher);
 
-                if (thisClass && thisSubject) {
-                    let classLearning = await Lesson.findOne({
-                        where: {
-                            classId: thisClass.id,
-                            subjectId: thisSubject.id,
-                        }
-                    })
-
-                    await thisTeacher.addLesson(classLearning);
+            /* Assign teacher to lesson */
+            let classLearning = await Lesson.findOne({
+                where: {
+                    classId: thisClass.id,
+                    subjectId: thisSubject.id,
                 }
-            } catch (teacherError) {
-                console.log(teacherError);
-                return res.status(400).json({ error: "Failed to find/create teacher" })
-            }
+            })
+            await thisTeacher.addLesson(classLearning);
+
+        } catch (teacherError) {
+            console.log(teacherError);
+            return res.status(400).json({ error: "Failed to find/create teacher" })
         }
 
         /* Students */
-        if (students) {
-            try {
-                theseStudents = [];
-                for (let student of students) {
-                    let findStudent = await Student.findOne({ where: { email: student.email } });
-                    findStudent ? console.log('student valid, now setting') : console.log('no such student. now creating')
-                    let thisStudent = findStudent ? findStudent : await Student.create({
-                        name: student.name,
-                        email: student.email,
-                        classId: thisClass.id
-                    });
-                    theseStudents.push(thisStudent);
-                }
-            } catch (studentError) {
-                console.log(studentError);
-                return res.status(400).json({ error: "Failed to find/create students" })
+        try {
+            for (let student of students) {
+                let findStudent = await Student.findOne({ where: { email: student.email } });
+                findStudent ? console.log('student valid, now setting') : console.log('no such student. now creating')
+                let thisStudent = findStudent ? findStudent : await Student.create(student);
+
+                thisStudent.addClass(thisClass);
             }
+        } catch (studentError) {
+            console.log(studentError);
+            return res.status(400).json({ error: "Failed to find/create students" })
         }
+
         return res.sendStatus(204);
+
     } catch (e) {
         console.log(e);
         return res.status(500)
