@@ -70,16 +70,16 @@ http://localhost:3000/api
        "email": "studentB@gmail.com"
      }],
     "class": {
-       "classCode": "S1-A",
-       "name": "S1 ACACA"
+       "classCode": "P1-1",
+       "name": "P1 AA"
     },
     "subject": {
-       "subjectCode": 141414,
+       "subjectCode": SCI,
        "name": "Science"
     },
        "teacher": {
-       "name": 234,
-       "email": "teacher234@gmail.com"
+       "name": Teacher 1,
+       "email": "teacher1@gmail.com"
     }
  }
  ```
