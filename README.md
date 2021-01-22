@@ -5,6 +5,24 @@
 v15.4.0
 ```
 
+## Unit Tests
+Tests are run using `jest` and `supertest`
+
+```
+npm test
+```
+
+### Test suites
+- validation tests
+   1. Should accept full entries
+   1. Should not accept missing entries
+   1. Should not accept empty fields
+- endpoint tests
+   1. GET `/workload` should return 200
+   1. POST `/register` should return 204 with full body information
+   1. POST `/register` should 400 if body is missing items
+   1. POST `/register` should return 400 if body has empty fields
+
 ## Initialising the API server
 - Install dependencies
 ```
