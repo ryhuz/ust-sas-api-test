@@ -17,7 +17,7 @@ var subjectAttr = {
     allowNull: false,
     unique: true
   },
-  subjectName: {
+  name: {
     type: _sequelize.DataTypes.STRING,
     allowNull: false
   }

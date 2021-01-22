@@ -12,7 +12,7 @@ const classAttr = {
         allowNull: false,
         unique: true,
     },
-    className: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
     },

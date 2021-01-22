@@ -17,7 +17,7 @@ var classAttr = {
     allowNull: false,
     unique: true
   },
-  className: {
+  name: {
     type: _sequelize.DataTypes.STRING,
     allowNull: false
   }

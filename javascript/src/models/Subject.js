@@ -12,7 +12,7 @@ const subjectAttr = {
         allowNull: false,
         unique: true,
     },
-    subjectName: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
     },

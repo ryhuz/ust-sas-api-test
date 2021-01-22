@@ -19,11 +19,13 @@ var _Subject = _interopRequireDefault(require("../models/Subject"));
 
 var _JunctionTables = require("../models/JunctionTables");
 
+var _updateDataUtil = require("../util/updateDataUtil");
+
 var ReportsController = _express["default"].Router();
 
 ReportsController.get('/workload', /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
-    var allSubjects, teachers, workload, updateWorkload;
+    var allSubjects, teachers, workload;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -49,50 +51,23 @@ ReportsController.get('/workload', /*#__PURE__*/function () {
 
             /* initialise workload object */
             workload = {};
-
-            updateWorkload = function updateWorkload(teacher) {
-              /* Create teacher entry in workload */
-              workload[teacher.name] = [];
-              var currTeacher = workload[teacher.name];
-              teacher.Lessons.forEach(function (lesson) {
-                /* Check if subject is already listed in teacher's load */
-                var currSubject = allSubjects.find(function (s) {
-                  return s.id === lesson.SubjectId;
-                });
-                var currSubjectIdx = currTeacher.findIndex(function (sub) {
-                  return sub.subjectCode === currSubject.subjectCode;
-                });
-                /* Update load of subject */
-
-                if (currSubjectIdx > -1) {
-                  currTeacher[currSubjectIdx].numberOfClasses++;
-                } else {
-                  currTeacher.push({
-                    subjectCode: currSubject.subjectCode,
-                    subjectName: currSubject.subjectName,
-                    numberOfClasses: 1
-                  });
-                }
-              });
-            };
-
             teachers.forEach(function (teacher) {
-              updateWorkload(teacher);
+              (0, _updateDataUtil.updateWorkload)(teacher, workload, allSubjects);
             });
             return _context.abrupt("return", res.status(200).json(workload));
 
-          case 13:
-            _context.prev = 13;
+          case 12:
+            _context.prev = 12;
             _context.t0 = _context["catch"](0);
             console.log(_context.t0);
             return _context.abrupt("return", res.status(500));
 
-          case 17:
+          case 16:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 13]]);
+    }, _callee, null, [[0, 12]]);
   }));
 
   return function (_x, _x2) {

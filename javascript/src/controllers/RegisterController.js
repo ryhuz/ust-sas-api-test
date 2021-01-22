@@ -4,6 +4,8 @@ import Subject from '../models/Subject'
 import Class from '../models/Class'
 import Teacher from '../models/Teacher'
 import { Lesson } from '../models/JunctionTables'
+import { updateName } from '../util/updateDataUtil'
+import fieldsAreValid from '../util/validationUtil'
 
 const RegisterController = Express.Router();
 
@@ -12,61 +14,9 @@ RegisterController.post('/', async (req, res) => {
     let toClass = req.body.class;
     let thisTeacher, thisSubject, thisClass;
 
-    /* Check request body has all require parameters */
-    if (!teacher || !students || !subject || !toClass) {
-        return res.status(400).json({
-            error: `Missing items: ${!teacher ? "Teacher" : ""} ${!students ? "Students" : ""} ${!subject ? "Subject" : ""} ${!toClass ? "Class" : ""}`
-        })
-    }
-
-    /* Check for empty fields */
-    const validCheck = (param) => {
-        param = `${param}`;
-        if (param.trim() === "") { return false }
-        else { return true }
-    }
-    let emptyField = [];
-    const validateFields = () => {
-        for (let student of students) {
-            let anyEmpty = false;
-            if (!validCheck(student.name)) {
-                emptyField.push('Student Name');
-                anyEmpty = true;
-            }
-            if (!validCheck(student.email)) {
-                emptyField.push('Student Email');
-                anyEmpty = true;
-            }
-            if (anyEmpty) break;
-        }
-        if (!validCheck(teacher.name)) {
-            emptyField.push('Teacher Name');
-        }
-        if (!validCheck(teacher.email)) {
-            emptyField.push('Teacher Email');
-        }
-        if (!validCheck(subject.name)) {
-            emptyField.push('Subject Name');
-        }
-        if (!validCheck(subject.subjectCode)) {
-            emptyField.push('Subject Code');
-        }
-        if (!validCheck(toClass.name)) {
-            emptyField.push('Class Name');
-        }
-        if (!validCheck(toClass.classCode)) {
-            emptyField.push('Class Code');
-        }
-        /* Return error if any empty fields */
-        if (emptyField.length) {
-            return false;
-        }
-        return true;
-    }
-    if (!validateFields()) {
-        return res.status(400).json({
-            error: `Missing fields: ${emptyField.join(', ')}`
-        })
+    let validationError = fieldsAreValid(req.body)
+    if (validationError) {
+        return res.status(400).json({ error: validationError })
     };
 
     const registerItem = async (item) => {
@@ -74,9 +24,9 @@ RegisterController.post('/', async (req, res) => {
             case 'subject':
                 try {
                     let findSubject = await Subject.findOne({ where: { subjectCode: subject.subjectCode } });
-                    thisSubject = findSubject ? findSubject : await Subject.create({
+                    thisSubject = findSubject ? await updateName(subject, findSubject) : await Subject.create({
                         subjectCode: subject.subjectCode,
-                        subjectName: subject.name,
+                        name: subject.name,
                     });
                 } catch (subjectError) {
                     console.log(subjectError);
@@ -86,22 +36,21 @@ RegisterController.post('/', async (req, res) => {
             case 'class':
                 try {
                     let findClass = await Class.findOne({ where: { classCode: toClass.classCode } });
-                    thisClass = findClass ? findClass : await Class.create({
+                    thisClass = findClass ? await updateName(toClass, findClass) : await Class.create({
                         classCode: toClass.classCode,
-                        className: toClass.name,
+                        name: toClass.name,
                     });
                     /* Add subject to class */
                     await thisClass.addSubject(thisSubject);
                 } catch (classError) {
                     console.log(classError);
                     return "Failed to find/create class";
-                    // return res.status(400).json({ error: "Failed to find/create class" })
                 }
                 break;
             case 'teacher':
                 try {
                     let findTeacher = await Teacher.findOne({ where: { email: teacher.email } });
-                    thisTeacher = findTeacher ? findTeacher : await Teacher.create(teacher);
+                    thisTeacher = findTeacher ? await updateName(teacher, findTeacher) : await Teacher.create(teacher);
 
                     /* Assign teacher to lesson */
                     let classLearning = await Lesson.findOne({
@@ -120,11 +69,11 @@ RegisterController.post('/', async (req, res) => {
                     }
                 }
                 break;
-            case 'student':
+            case 'students':
                 try {
                     for (let student of students) {
                         let findStudent = await Student.findOne({ where: { email: student.email } });
-                        let thisStudent = findStudent ? findStudent : await Student.create(student);
+                        let thisStudent = findStudent ? await updateName(student, findStudent) : await Student.create(student);
 
                         /* Add student to class */
                         thisStudent.addClass(thisClass);
@@ -148,7 +97,7 @@ RegisterController.post('/', async (req, res) => {
         let anyError;
         let items = ['subject', 'class', 'teacher', 'students'];
 
-        for (let item of items){
+        for (let item of items) {
             anyError = await registerItem(item);
             if (anyError) {
                 return res.status(400).json({ error: anyError })

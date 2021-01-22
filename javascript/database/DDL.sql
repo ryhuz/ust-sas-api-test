@@ -18,7 +18,7 @@ SELECT "Students table created";
 
 CREATE TABLE Subjects (
     id int NOT NULL AUTO_INCREMENT,
-    subjectName varchar(255) NOT NULL,
+    name varchar(255) NOT NULL,
     subjectCode varchar(10) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (subjectCode)
@@ -27,7 +27,7 @@ SELECT "Subjects table created";
 
 CREATE TABLE Classes (
     id int NOT NULL AUTO_INCREMENT,
-    className varchar(255) NOT NULL,
+    name varchar(255) NOT NULL,
     classCode varchar(10) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (classCode)
