@@ -38,7 +38,7 @@ const fieldsAreValid = (fields) => {
   /* Check if any fields are empty */
   if (hasEmptyFields(teacher) || hasEmptyFields(students) || hasEmptyFields(subject) || hasEmptyFields(toClass)) {
     error = `${hasEmptyFields(teacher, "Teacher") ? "Teacher " : ""}${hasEmptyFields(students, "Student") ? "Students " : ""}${hasEmptyFields(subject, "Subject ") ? "Subject " : ""}${hasEmptyFields(toClass, "Class") ? "Class" : ""}`;
-    return `Empty fields: ${error.trim()}`;
+    return `Empty fields in: ${error.trim()}`;
   }
   return;
 }
