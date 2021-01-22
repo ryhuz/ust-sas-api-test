@@ -54,7 +54,9 @@ http://localhost:3000/api
 1. class
     * name
     * classCode
-    
+
+If any of the items already exist as their unique identifier, but name fields are different, it will be updated to that provided in the request.
+
 *All fields must be provided.*
       
 ##### Example body:
